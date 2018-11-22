@@ -9,6 +9,7 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 
 import javafx.scene.layout.VBox;
@@ -41,13 +42,15 @@ public class Controller {
     private static double DecreaseContrastRatio = 0.5;
     private static int BrightnessRatio = 10;
 
+    private String path = "F:\\Projects\\java\\Raster\\res\\pic.jpg";
+
     private ColorRGB[][] arr;
 
     @FXML
     void initialize()
     {
         try {
-            img = ImageIO.read(new File("D:\\Projects\\Java\\testRastr\\src\\pik.jpg"));
+            img = ImageIO.read(new File(path));
             width = img.getWidth();
             height = img.getHeight();
         } catch (IOException e) {
@@ -63,7 +66,7 @@ public class Controller {
     private void LoadImage()
     {
         try {
-            img = ImageIO.read(new File("D:\\Projects\\Java\\testRastr\\src\\pik.jpg"));
+            img = ImageIO.read(new File(path));
             width = img.getWidth();
             height = img.getHeight();
             arr = new ColorRGB[width][height];
@@ -100,7 +103,7 @@ public class Controller {
                 g = value(arr[x][y].g);
                 b = value(arr[x][y].b);
 
-                img.setRGB(x, y, new Color( r, g, b, 200).getRGB());
+                img.setRGB(x, y, new Color( r, g, b, 255).getRGB());
             }
         }
         printImg();
@@ -364,13 +367,188 @@ public class Controller {
         stage.show();
     }
 
-    public void Ravnomer(int q)
+    @FXML
+    public void Ravn()
     {
-        double[][] filtr = new double[2*q+1][2*q+1];
-        for (int y = 0; y < height; y++)
-            for (int x = 0; x < width; x++)
-            {
+        Ravnomer(2);
+    }
 
+
+    private void Ravnomer(int q)
+    {
+        int n = 2 * q + 1;
+        int tempR[][] = new int[n][n];
+        int tempG[][] = new int[n][n];
+        int tempB[][] = new int[n][n];
+
+        for (int y = q; y < height - q; y++)
+            for (int x = q; x < width - q; x++)
+            {
+                int k = 0, l = 0;
+                for (int i = x - q; i <= x + q; i++) {
+                    for (int j = y - q; j <= y + q; j++) {
+                        tempR[k][l] = arr[i][j].r;
+                        tempG[k][l] = arr[i][j].g;
+                        tempB[k][l] = arr[i][j].b;
+                        l++;
+                    }
+                    k++;
+                    l = 0;
+                }
+
+                int r = Calc(tempR, q);
+                int g = Calc(tempG, q);
+                int b = Calc(tempB, q);
+
+                img.setRGB(x, y, new Color(value(r), value(g), value(b), 200).getRGB());
             }
+
+        printImg();
+    }
+
+    private int Calc(int[][] arr, int q)
+    {
+        int res = 0, n = 2 * q + 1;
+
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++) {
+                arr[i][j] /=  (n * n);
+                res += arr[i][j];
+            }
+
+        return res;
+    }
+
+    private double[][] GaussianFilterInit(int q, double sigma)
+    {
+        double A, sum = 0, filter[][] = new double[2*q+1][2*q+1];
+
+        for (int i = -q; i <= q; i++) {
+            for (int j = -q; j <= q; j++) {
+                double h = Math.exp(-(i * i + j * j) / (2 * sigma * sigma));
+                sum += h;
+            }
+        }
+
+        A = 1 / sum;
+
+        int k = 0, l = 0;
+        for (int i = -q; i <= q; i++) {
+            for (int j = -q; j <= q; j++) {
+                double h = Math.exp(-(i * i + j * j) / (2 * sigma * sigma)) * A;
+                filter[k][l] = h;
+                l++;
+            }
+            k++; l = 0;
+        }
+        return filter;
+    }
+
+    private int GaussianCalc(int[][] arr, int q, double[][] filter)
+    {
+        int res = 0, n = 2 * q + 1;
+
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++) {
+                arr[i][j] *= filter[i][j];
+                res += arr[i][j];
+            }
+
+        return res;
+    }
+
+    private void GaussianBlur(int q, double sigma)
+    {
+        double filter[][] = GaussianFilterInit(q, sigma);
+
+        int n = 2 * q + 1;
+        int tempR[][] = new int[n][n];
+        int tempG[][] = new int[n][n];
+        int tempB[][] = new int[n][n];
+
+        for (int y = q; y < height - q; y++)
+            for (int x = q; x < width - q; x++)
+            {
+                int k = 0, l = 0;
+                for (int i = x - q; i <= x + q; i++) {
+                    for (int j = y - q; j <= y + q; j++) {
+                        tempR[k][l] = arr[i][j].r;
+                        tempG[k][l] = arr[i][j].g;
+                        tempB[k][l] = arr[i][j].b;
+                        l++;
+                    }
+                    k++;
+                    l = 0;
+                }
+
+                int r = GaussianCalc(tempR, q, filter);
+                int g = GaussianCalc(tempG, q, filter);
+                int b = GaussianCalc(tempB, q, filter);
+
+                img.setRGB(x, y, new Color(value(r), value(g), value(b), 200).getRGB());
+            }
+
+        printImg();
+    }
+
+    @FXML
+    public void Gauss()
+    {
+        GaussianBlur(2, 0.7);
+    }
+
+    private void SharpF(int q, int k)
+    {
+        int n = 2 * q + 1;
+        int tempR[][] = new int[n][n];
+        int tempG[][] = new int[n][n];
+        int tempB[][] = new int[n][n];
+
+        for (int y = q; y < height - q; y++)
+            for (int x = q; x < width - q; x++)
+            {
+                int c = 0, l = 0;
+                for (int i = x - q; i <= x + q; i++) {
+                    for (int j = y - q; j <= y + q; j++) {
+                        tempR[c][l] = arr[i][j].r;
+                        tempG[c][l] = arr[i][j].g;
+                        tempB[c][l] = arr[i][j].b;
+                        l++;
+                    }
+                    c++;
+                    l = 0;
+                }
+
+                int r = SharpCalc(tempR, q, k);
+                int g = SharpCalc(tempG, q, k);
+                int b = SharpCalc(tempB, q, k);
+
+                img.setRGB(x, y, new Color(value(r), value(g), value(b), 200).getRGB());
+            }
+
+        printImg();
+    }
+
+    private int SharpCalc(int[][] arr, int q, int k)
+    {
+        int res = 0, n = 2 * q + 1;
+
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++) {
+
+                if (i == j && i == q)
+                    arr[i][j] *= k+1;
+                else
+                    arr[i][j] *= (-k/8);
+                res += arr[i][j];
+            }
+
+        return res;
+    }
+
+    @FXML
+    public void Sharp()
+    {
+        SharpF(1, 8);
     }
 }
