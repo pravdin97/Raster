@@ -13,6 +13,7 @@ import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
@@ -21,6 +22,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Random;
 
 public class Controller {
 
@@ -526,7 +528,7 @@ public class Controller {
                 img.setRGB(x, y, new Color(value(r), value(g), value(b), 200).getRGB());
             }
 
-        printImg();
+//        printImg();
     }
 
     private int SharpCalc(int[][] arr, int q, int k)
@@ -550,5 +552,113 @@ public class Controller {
     public void Sharp()
     {
         SharpF(1, 8);
+        printImg();
+    }
+
+    @FXML
+    public void Noise()
+    {
+        Random rnd = new Random();
+        int k = rnd.nextInt() % 100;
+
+        for (int i = 0; i < k; i++)
+        {
+            int x = rnd.nextInt(width);
+            int y = rnd.nextInt(height);
+            arr[x][y].r = 0;
+            arr[x][y].g = 0;
+            arr[x][y].b = 0;
+            img.setRGB(x, y, new Color( arr[x][y].r, arr[x][y].g, arr[x][y].b, 200).getRGB());
+
+            makeLine(rnd.nextInt(width - 5), rnd.nextInt(height - 5));
+        }
+
+        printImg();
+    }
+
+    public void makeLine(int x, int y)
+    {
+        Random rnd = new Random();
+        int k = rnd.nextInt() % 4;
+
+        for (int i = 0; i < k; i++)
+        {
+            if (k % 2 == 0)
+                x++;
+            else y++;
+
+            arr[x][y].r = 0;
+            arr[x][y].g = 0;
+            arr[x][y].b = 0;
+            img.setRGB(x, y, new Color( arr[x][y].r, arr[x][y].g, arr[x][y].b, 200).getRGB());
+        }
+    }
+
+    private void Median(int q)
+    {
+        int n = 2 * q + 1;
+        int tempR[][] = new int[n][n];
+        int tempG[][] = new int[n][n];
+        int tempB[][] = new int[n][n];
+
+        for (int y = q; y < height - q; y++)
+            for (int x = q; x < width - q; x++)
+            {
+                int k = 0, l = 0;
+                for (int i = x - q; i <= x + q; i++) {
+                    for (int j = y - q; j <= y + q; j++) {
+                        tempR[k][l] = arr[i][j].r;
+                        tempG[k][l] = arr[i][j].g;
+                        tempB[k][l] = arr[i][j].b;
+                        l++;
+                    }
+                    k++;
+                    l = 0;
+                }
+
+                int r = CalcMedian(tempR, q);
+                int g = CalcMedian(tempG, q);
+                int b = CalcMedian(tempB, q);
+
+                arr[x][y].r = r;
+                arr[x][y].r = g;
+                arr[x][y].r = b;
+
+                img.setRGB(x, y, new Color(value(r), value(g), value(b), 200).getRGB());
+            }
+
+        printImg();
+    }
+
+    private int CalcMedian(int[][] arr, int q)
+    {
+        int n = 2 * q + 1, mas[] = new int[n * n];
+        int k = 0;
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++) {
+                mas[k] += arr[i][j];
+                k++;
+            }
+
+        for(int j = 0; j < n * n - 1; j++)
+            for (int i = 0; i < n * n - j - 1; i++)
+                if (mas[i] > mas[i+1])
+                {
+                    int tmp = mas[i];
+                    mas[i] = mas[i+1];
+                    mas[i+1] = tmp;
+                }
+
+        return mas[q];
+    }
+
+    @FXML
+    public void Aqua()
+    {
+        Median(1);
+        Median(1);
+        Median(1);
+        SharpF(1, 8);
+        printImg();
     }
 }

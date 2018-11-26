@@ -11,21 +11,47 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="543.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="sample.Controller">
   <children>
-    <Button fx:id="show" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#LoadImage" text="Load" />
-    <Canvas fx:id="canvas" height="200.0" layoutX="157.0" layoutY="187.0" width="200.0" />
-    <Button fx:id="negat" layoutX="64.0" layoutY="14.0" mnemonicParsing="false" onAction="#Negative" text="Negative" />
-    <Button layoutX="136.0" layoutY="14.0" mnemonicParsing="false" onAction="#PlusBright" text="+ Bright" />
-    <Button layoutX="216.0" layoutY="14.0" mnemonicParsing="false" onAction="#MinusBright" text="- Bright" />
-    <Button layoutX="391.0" layoutY="14.0" mnemonicParsing="false" onAction="#MinusContrast" text="- Contrast" />
-    <Button layoutX="294.0" layoutY="14.0" mnemonicParsing="false" onAction="#PlusContrast" text="+ Contrast" />
-    <Button layoutX="14.0" layoutY="50.0" mnemonicParsing="false" onAction="#grey" text="Grey" />
-    <Button layoutX="64.0" layoutY="50.0" mnemonicParsing="false" onAction="#redHist" text="Red Histogram" />
-    <Button layoutX="172.0" layoutY="50.0" mnemonicParsing="false" onAction="#greenHist" text="Green Histogram" />
-    <Button layoutX="294.0" layoutY="50.0" mnemonicParsing="false" onAction="#blueHist" text="Blue Histogram" />
-    <Button layoutX="478.0" layoutY="14.0" mnemonicParsing="false" onAction="#BW" text="BW" />
-    <Button layoutX="406.0" layoutY="50.0" mnemonicParsing="false" onAction="#brightHist" text="Bright Histogram" />
-    <Button layoutX="14.0" layoutY="97.0" mnemonicParsing="false" onAction="#Ravn" text="Ravn" />
-    <Button layoutX="76.0" layoutY="98.0" mnemonicParsing="false" onAction="#Gauss" text="Gauss" />
-    <Button layoutX="144.0" layoutY="98.0" mnemonicParsing="false" onAction="#Sharp" text="Sharp" />
+    <Canvas fx:id="canvas" height="200.0" layoutX="14.0" layoutY="84.0" width="200.0" />
+    <Button layoutX="249.0" layoutY="5.0" mnemonicParsing="false" onAction="#PlusBright" text="+ Bright" />
+    <Button layoutX="251.0" layoutY="34.0" mnemonicParsing="false" onAction="#MinusBright" text="- Bright" />
+    <Button layoutX="335.0" layoutY="34.0" mnemonicParsing="false" onAction="#MinusContrast" prefWidth="77.0" text="- Contrast" />
+    <Button layoutX="335.0" layoutY="5.0" mnemonicParsing="false" onAction="#PlusContrast" text="+ Contrast" />
+    <MenuBar layoutX="4.0" layoutY="2.0">
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#LoadImage" text="Load" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Edit">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#Negative" text="Negative" />
+            <MenuItem mnemonicParsing="false" onAction="#PlusBright" text="+Bright" />
+            <MenuItem mnemonicParsing="false" onAction="#MinusBright" text="-Bright" />
+            <MenuItem mnemonicParsing="false" onAction="#PlusContrast" text="+Contrast" />
+            <MenuItem mnemonicParsing="false" onAction="#MinusContrast" text="-Contrast" />
+            <MenuItem mnemonicParsing="false" onAction="#BW" text="BW" />
+            <MenuItem mnemonicParsing="false" onAction="#grey" text="Grey" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Histograms">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#redHist" text="Red" />
+            <MenuItem mnemonicParsing="false" onAction="#greenHist" text="Green" />
+            <MenuItem mnemonicParsing="false" onAction="#blueHist" text="Blue" />
+            <MenuItem mnemonicParsing="false" onAction="#brightHist" text="Bright" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Filters">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#Ravn" text="Ravn" />
+            <MenuItem mnemonicParsing="false" onAction="#Gauss" text="Gauss" />
+            <MenuItem mnemonicParsing="false" onAction="#Sharp" text="Sharp" />
+            <MenuItem mnemonicParsing="false" onAction="#Noise" text="Noise" />
+            <MenuItem mnemonicParsing="false" onAction="#Aqua" text="Aqua" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
   </children>
 </AnchorPane>
