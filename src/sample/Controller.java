@@ -44,7 +44,7 @@ public class Controller {
     private static double DecreaseContrastRatio = 0.5;
     private static int BrightnessRatio = 10;
 
-    private String path = "F:\\Projects\\java\\Raster\\res\\pic.jpg";
+    private String path = "D:\\Projects\\Java\\Raster\\src\\nat.jpg";
 
     private ColorRGB[][] arr;
 
@@ -565,9 +565,9 @@ public class Controller {
         {
             int x = rnd.nextInt(width);
             int y = rnd.nextInt(height);
-            arr[x][y].r = 0;
-            arr[x][y].g = 0;
-            arr[x][y].b = 0;
+            arr[x][y].r = rnd.nextInt(255);
+            arr[x][y].g = rnd.nextInt(255);
+            arr[x][y].b = rnd.nextInt(255);
             img.setRGB(x, y, new Color( arr[x][y].r, arr[x][y].g, arr[x][y].b, 200).getRGB());
 
             makeLine(rnd.nextInt(width - 5), rnd.nextInt(height - 5));
@@ -587,9 +587,9 @@ public class Controller {
                 x++;
             else y++;
 
-            arr[x][y].r = 0;
-            arr[x][y].g = 0;
-            arr[x][y].b = 0;
+            arr[x][y].r = rnd.nextInt(255);
+            arr[x][y].g = rnd.nextInt(255);
+            arr[x][y].b = rnd.nextInt(255);
             img.setRGB(x, y, new Color( arr[x][y].r, arr[x][y].g, arr[x][y].b, 200).getRGB());
         }
     }
@@ -600,6 +600,7 @@ public class Controller {
         int tempR[][] = new int[n][n];
         int tempG[][] = new int[n][n];
         int tempB[][] = new int[n][n];
+        int tempY[][] = new int[n][n];
 
         for (int y = q; y < height - q; y++)
             for (int x = q; x < width - q; x++)
@@ -610,19 +611,26 @@ public class Controller {
                         tempR[k][l] = arr[i][j].r;
                         tempG[k][l] = arr[i][j].g;
                         tempB[k][l] = arr[i][j].b;
+
+                        tempY[k][l] =(int) Y(arr[i][j].r, arr[i][j].g, arr[i][j].b);
+
                         l++;
                     }
                     k++;
                     l = 0;
                 }
+                int ind[] = CalcMedian(tempY, tempR, tempG, tempB, q);
+                int r = ind[0];
+                int g = ind[1];
+                int b = ind[2];
 
-                int r = CalcMedian(tempR, q);
-                int g = CalcMedian(tempG, q);
-                int b = CalcMedian(tempB, q);
+//                int r = CalcMedian(tempR, q);
+//                int g = CalcMedian(tempG, q);
+//                int b = CalcMedian(tempB, q);
 
                 arr[x][y].r = r;
-                arr[x][y].r = g;
-                arr[x][y].r = b;
+                arr[x][y].g = g;
+                arr[x][y].b = b;
 
                 img.setRGB(x, y, new Color(value(r), value(g), value(b), 200).getRGB());
             }
@@ -630,13 +638,17 @@ public class Controller {
         printImg();
     }
 
-    private int CalcMedian(int[][] arr, int q)
+    private int[] CalcMedian(int[][] arr, int[][] r, int[][] g, int[][] b, int q)
     {
-        int n = 2 * q + 1, mas[] = new int[n * n];
+        int n = 2 * q + 1, mas[] = new int[n * n], red[] = new int[n * n], green[] = new int[n * n], blue[] = new int[n * n];
         int k = 0;
         for (int i = 0; i < n; i++)
             for (int j = 0; j < n; j++) {
-                mas[k] += arr[i][j];
+                mas[k] = arr[i][j];
+//                indexes[k] = k;
+                red[k] = r[i][j];
+                green[k] = g[i][j];
+                blue[k] = b[i][j];
                 k++;
             }
 
@@ -647,10 +659,28 @@ public class Controller {
                     int tmp = mas[i];
                     mas[i] = mas[i+1];
                     mas[i+1] = tmp;
+
+//                    tmp = indexes[i];
+//                    indexes[i] = indexes[i+1];
+//                    indexes[i+1] = tmp;
+
+                    tmp = red[i];
+                    red[i] = red[i+1];
+                    red[i+1] = tmp;
+
+                    tmp = green[i];
+                    green[i] = green[i+1];
+                    green[i+1] = tmp;
+
+                    tmp = blue[i];
+                    blue[i] = blue[i+1];
+                    blue[i+1] = tmp;
                 }
 
-        return mas[q];
+//        return mas[n+1];
+        return new int[] {red[n+1], green[n+1], blue[n+1]};
     }
+
 
     @FXML
     public void Aqua()
