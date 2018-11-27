@@ -689,6 +689,7 @@ public class Controller {
         Median(1);
         Median(1);
         SharpF(1, 8);
+
         printImg();
     }
 }
