@@ -11,7 +11,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="543.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="sample.Controller">
   <children>
-    <Canvas fx:id="canvas" height="200.0" layoutX="14.0" layoutY="84.0" width="200.0" />
+    <Canvas fx:id="canvas" height="200.0" layoutX="14.0" layoutY="177.0" width="200.0" />
     <Button layoutX="249.0" layoutY="5.0" mnemonicParsing="false" onAction="#PlusBright" text="+ Bright" />
     <Button layoutX="251.0" layoutY="34.0" mnemonicParsing="false" onAction="#MinusBright" text="- Bright" />
     <Button layoutX="335.0" layoutY="34.0" mnemonicParsing="false" onAction="#MinusContrast" prefWidth="77.0" text="- Contrast" />
@@ -53,5 +53,11 @@
         </Menu>
       </menus>
     </MenuBar>
+    <Slider fx:id="widthResize" layoutX="14.0" layoutY="74.0" max="800.0" onDragDetected="#WidthResize" value="200.0" />
+    <Label layoutX="14.0" layoutY="47.0" text="Width" />
+    <Label fx:id="lol" layoutX="172.0" layoutY="72.0" text="" />
+    <Slider fx:id="heightResize" layoutX="14.0" layoutY="130.0" max="800.0" min="0.0" onDragDetected="#HeightResize" />
+    <Label layoutX="14.0" layoutY="103.0" text="Height" />
+    <Label fx:id="heightValue" layoutX="172.0" layoutY="121.0" text="" />
   </children>
 </AnchorPane>

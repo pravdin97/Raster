@@ -9,6 +9,8 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 
@@ -44,9 +46,20 @@ public class Controller {
     private static double DecreaseContrastRatio = 0.5;
     private static int BrightnessRatio = 10;
 
-    private String path = "D:\\Projects\\Java\\Raster\\src\\nat.jpg";
+    private String path = "F:\\Projects\\java\\Raster\\res\\pic.jpg";
 
     private ColorRGB[][] arr;
+    @FXML
+    private Label lol;
+
+    @FXML
+    private Label heightValue;
+
+    @FXML
+    private Slider widthResize;
+
+    @FXML
+    private Slider heightResize;
 
     @FXML
     void initialize()
@@ -62,6 +75,7 @@ public class Controller {
 
         canvas.setWidth(width);
         canvas.setHeight(height);
+
     }
 
     @FXML
@@ -84,6 +98,11 @@ public class Controller {
                 }
         } catch (IOException e) {
         }
+
+//        widthValue.setText(""+width);
+        widthResize.setValue(width);
+        heightResize.setValue(height);
+
         make3Graphs();
         printImg();
     }
@@ -238,6 +257,9 @@ public class Controller {
     private void printImg()
     {
         Image image = SwingFXUtils.toFXImage(img, null);
+
+        canvas.setWidth(width);
+        canvas.setHeight(height);
 
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.fillRect(0, 0, width, height);
@@ -691,5 +713,87 @@ public class Controller {
         SharpF(1, 8);
 
         printImg();
+    }
+
+    private void Bilinear(int newHeight, int newWidth) {
+
+        BufferedImage src = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_BGR);
+        ColorRGB[][] buff = new ColorRGB[newWidth][newHeight];
+        for (int x = 0; x < newWidth; x++)
+            for (int y = 0; y < newHeight; y++)
+                buff [x][y] = new ColorRGB(0, 0, 0);
+
+        double dy = (double)height / (double)newHeight, dx = (double)width / (double)newWidth;
+        for( int y = 0; y < newHeight - 1; y++ ) {
+
+            double indY,indY2;
+            int inY;
+
+            indY = y * dy;
+            inY = Math.round((float) indY);
+            indY -= inY;
+            indY2 = 1 - indY;
+
+            for(int x = 0; x < newWidth - 1; x++ ) {
+
+                int inX;
+                double indX, indX2;
+
+                indX = x * dx;
+                inX = Math.round((float) indX);
+                indX -= inX;
+                indX2 = 1 - indX;
+
+                double blue, green, red;
+
+                double x1y1 = indX*indY, x1y2 = indX*indY2, x2y1 = indX2*indY, x2y2 = indX2*indY2;
+//                uchar* ptr = (uchar*) (image->imageData + inY * image->widthStep);
+//                uchar* ptr1 = (uchar*) (image->imageData + (inY+1) * image->widthStep);
+
+//                blue = ptr[3*inX] * x2y2 + ptr[3*(inX+1)] * x1y2 + ptr1[3*inX] * x2y1 + ptr1[3*(inX+1)] * x1y1;
+//                green = ptr[3*inX + 1] * x2y2 + ptr[3*(inX+1) + 1] * x1y2 + ptr1[3*inX + 1] * x2y1 + ptr1[3*(inX+1) + 1] * x1y1;
+//                red = ptr[3*inX + 2] * x2y2 + ptr[3*(inX+1) + 2] * x1y2 + ptr1[3*inX + 2] * x2y1 + ptr1[3*(inX+1) + 2] * x1y1;
+//
+//                ptr = (uchar*) (src->imageData + y * src->widthStep);
+//                ptr[3*x] = blue;
+//                ptr[3*x + 1] = green;
+//                ptr[3*x + 2] = red;
+
+                blue = arr[inX][inY].b * x2y2 + arr[inX+1][inY].b * x1y2 + arr[inX][inY+1].b * x1y1 + arr[inX+1][inY+1].b * x1y1;
+                green = arr[inX][inY].g * x2y2 + arr[inX+1][inY].g * x1y2 + arr[inX][inY+1].g * x2y1 + arr[inX+1][inY+1].g * x1y1;
+                red = arr[inX][inY].r * x2y2 + arr[inX+1][inY].r * x1y2 + arr[inX][inY+1].r * x2y1 + arr[inX+1][inY+1].r * x1y1;
+
+                buff[x][y].r = Math.round((float) red);
+                buff[x][y].g = Math.round((float) blue);
+                buff[x][y].b = Math.round((float) green);
+
+                src.setRGB(x, y, new Color( value(buff[x][y].r), value(buff[x][y].g), value(buff[x][y].b), 200).getRGB());
+
+
+            }
+        }
+
+        arr = buff;
+        img = src;
+        width = newWidth;
+        height = newHeight;
+
+        printImg();
+    }
+
+    @FXML
+    public void WidthResize()
+    {
+        lol.setText(""+width);
+        int w = (int) widthResize.getValue();
+        Bilinear(height, w);
+    }
+
+    @FXML
+    public void HeightResize()
+    {
+        heightValue.setText(""+height);
+        int h = (int) heightResize.getValue();
+        Bilinear(h, width);
     }
 }
