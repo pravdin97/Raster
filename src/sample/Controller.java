@@ -715,6 +715,53 @@ public class Controller {
         printImg();
     }
 
+    private void Bilin(int nh, int nw) {
+        BufferedImage src = new BufferedImage(nw, nh, BufferedImage.TYPE_INT_BGR);
+        ColorRGB[][] buff = new ColorRGB[nw][nh];
+        for (int x = 0; x < nw; x++)
+            for (int y = 0; y < nh; y++)
+                buff [x][y] = new ColorRGB(0, 0, 0);
+
+        double dy = (double) height / (double) nh, dx = (double) width / (double) nw;
+
+        for (int y = 0; y < nh - 1; y++) {
+            double v = y * dy;
+            int vi = (int) v;
+            double dv = v - vi;
+
+            for (int x = 0; x < nw - 1; x++) {
+                double u = x * dx;
+                int ui = (int) u;
+                double du = u - ui;
+
+                double r, g, b;
+
+//                r = (1 - du) * (1 - dv) * arr[ui][vi].r + du * (1 - dv) * arr[ui+1][vi].r + du * dv * arr[ui+1][vi+1].r + (1 - du) * dv * arr[ui][vi+1].r;
+//                g = (1 - du) * (1 - dv) * arr[ui][vi].g + du * (1 - dv) * arr[ui+1][vi].g + du * dv * arr[ui+1][vi+1].g + (1 - du) * dv * arr[ui][vi+1].g;
+//                b = (1 - du) * (1 - dv) * arr[ui][vi].b + du * (1 - dv) * arr[ui+1][vi].b + du * dv * arr[ui+1][vi+1].b + (1 - du) * dv * arr[ui][vi+1].b;
+
+                r = ((1 - du) * arr[ui][vi].r + du * arr[ui+1][vi].r) * (1 - dv) + ((1 - du) * arr[ui][vi+1].r + du * arr[ui+1][vi+1].r) * dv;
+                g = ((1 - du) * arr[ui][vi].g + du * arr[ui+1][vi].g) * (1 - dv) + ((1 - du) * arr[ui][vi+1].g + du * arr[ui+1][vi+1].g) * dv;
+                b = ((1 - du) * arr[ui][vi].b + du * arr[ui+1][vi].b) * (1 - dv) + ((1 - du) * arr[ui][vi+1].b + du * arr[ui+1][vi+1].b) * dv;
+
+
+                buff[x][y].r = (int) Math.floor(r);
+                buff[x][y].g = (int) Math.floor(b);
+                buff[x][y].b = (int) Math.floor(g);
+
+                src.setRGB(x, y, new Color( value(buff[x][y].r), value(buff[x][y].g), value(buff[x][y].b), 200).getRGB());
+
+            }
+        }
+
+        arr = buff;
+        img = src;
+        width = nw;
+        height = nh;
+
+        printImg();
+    }
+
     private void Bilinear(int newHeight, int newWidth) {
 
         BufferedImage src = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_BGR);
@@ -723,14 +770,14 @@ public class Controller {
             for (int y = 0; y < newHeight; y++)
                 buff [x][y] = new ColorRGB(0, 0, 0);
 
-        double dy = (double)height / (double)newHeight, dx = (double)width / (double)newWidth;
+        double dy = (double) height / (double) newHeight, dx = (double) width / (double) newWidth;
         for( int y = 0; y < newHeight - 1; y++ ) {
 
             double indY,indY2;
             int inY;
 
             indY = y * dy;
-            inY = Math.round((float) indY);
+            inY = (int)Math.floor( indY);
             indY -= inY;
             indY2 = 1 - indY;
 
@@ -740,32 +787,21 @@ public class Controller {
                 double indX, indX2;
 
                 indX = x * dx;
-                inX = Math.round((float) indX);
+                inX = (int)Math.floor(indX);
                 indX -= inX;
                 indX2 = 1 - indX;
 
                 double blue, green, red;
 
                 double x1y1 = indX*indY, x1y2 = indX*indY2, x2y1 = indX2*indY, x2y2 = indX2*indY2;
-//                uchar* ptr = (uchar*) (image->imageData + inY * image->widthStep);
-//                uchar* ptr1 = (uchar*) (image->imageData + (inY+1) * image->widthStep);
 
-//                blue = ptr[3*inX] * x2y2 + ptr[3*(inX+1)] * x1y2 + ptr1[3*inX] * x2y1 + ptr1[3*(inX+1)] * x1y1;
-//                green = ptr[3*inX + 1] * x2y2 + ptr[3*(inX+1) + 1] * x1y2 + ptr1[3*inX + 1] * x2y1 + ptr1[3*(inX+1) + 1] * x1y1;
-//                red = ptr[3*inX + 2] * x2y2 + ptr[3*(inX+1) + 2] * x1y2 + ptr1[3*inX + 2] * x2y1 + ptr1[3*(inX+1) + 2] * x1y1;
-//
-//                ptr = (uchar*) (src->imageData + y * src->widthStep);
-//                ptr[3*x] = blue;
-//                ptr[3*x + 1] = green;
-//                ptr[3*x + 2] = red;
-
-                blue = arr[inX][inY].b * x2y2 + arr[inX+1][inY].b * x1y2 + arr[inX][inY+1].b * x1y1 + arr[inX+1][inY+1].b * x1y1;
+                blue = arr[inX][inY].b * x2y2 + arr[inX+1][inY].b * x1y2 + arr[inX][inY+1].b * x2y1 + arr[inX+1][inY+1].b * x1y1;
                 green = arr[inX][inY].g * x2y2 + arr[inX+1][inY].g * x1y2 + arr[inX][inY+1].g * x2y1 + arr[inX+1][inY+1].g * x1y1;
                 red = arr[inX][inY].r * x2y2 + arr[inX+1][inY].r * x1y2 + arr[inX][inY+1].r * x2y1 + arr[inX+1][inY+1].r * x1y1;
 
-                buff[x][y].r = Math.round((float) red);
-                buff[x][y].g = Math.round((float) blue);
-                buff[x][y].b = Math.round((float) green);
+                buff[x][y].r = (int) Math.floor(red);
+                buff[x][y].g = (int) Math.floor( blue);
+                buff[x][y].b = (int) Math.floor( green);
 
                 src.setRGB(x, y, new Color( value(buff[x][y].r), value(buff[x][y].g), value(buff[x][y].b), 200).getRGB());
 
@@ -785,15 +821,59 @@ public class Controller {
     public void WidthResize()
     {
         lol.setText(""+width);
-        int w = (int) widthResize.getValue();
-        Bilinear(height, w);
     }
 
     @FXML
     public void HeightResize()
     {
         heightValue.setText(""+height);
-        int h = (int) heightResize.getValue();
-        Bilinear(h, width);
+    }
+
+    @FXML
+    public void BilinearResize()
+    {
+        int h = (int) heightResize.getValue(), w = (int) widthResize.getValue();
+        Bilin(h, w);
+    }
+
+    private void Nearest(int nw, int nh)
+    {
+        BufferedImage src = new BufferedImage(nw, nh, BufferedImage.TYPE_INT_BGR);
+        ColorRGB[][] buff = new ColorRGB[nw][nh];
+        for (int x = 0; x < nw; x++)
+            for (int y = 0; y < nh; y++)
+                buff [x][y] = new ColorRGB(0, 0, 0);
+
+        double k2 = (double) height / (double) nh, k1 = (double) width / (double) nw;
+//        k1 = 1 / k1;
+//        k2 = 1 / k2;
+
+        for (int x = 0; x < nw; x++)
+        {
+            for (int y = 0; y < nh; y++)
+            {
+                int xx, yy;
+
+                xx = (int) Math.floor(k1 * x);
+                yy = (int) Math.floor(k2 * y);
+
+                buff[x][y] = arr[xx][yy];
+
+                src.setRGB(x, y, new Color( value(buff[x][y].r), value(buff[x][y].g), value(buff[x][y].b), 200).getRGB());
+            }
+        }
+        arr = buff;
+        img = src;
+        width = nw;
+        height = nh;
+
+        printImg();
+    }
+
+    @FXML
+    public void NearestResize()
+    {
+        int h = (int) heightResize.getValue(), w = (int) widthResize.getValue();
+        Nearest(w, h);
     }
 }
