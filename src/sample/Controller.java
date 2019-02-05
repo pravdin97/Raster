@@ -46,7 +46,7 @@ public class Controller {
     private static double DecreaseContrastRatio = 0.5;
     private static int BrightnessRatio = 10;
 
-    private String path = "F:\\Projects\\java\\Raster\\res\\pic.jpg";
+    private String path = "/home/egor/projects/image.jpg";
 
     private ColorRGB[][] arr;
     @FXML
@@ -746,8 +746,8 @@ public class Controller {
 
 
                 buff[x][y].r = (int) Math.floor(r);
-                buff[x][y].g = (int) Math.floor(b);
-                buff[x][y].b = (int) Math.floor(g);
+                buff[x][y].g = (int) Math.floor(g);
+                buff[x][y].b = (int) Math.floor(b);
 
                 src.setRGB(x, y, new Color( value(buff[x][y].r), value(buff[x][y].g), value(buff[x][y].b), 200).getRGB());
 
