@@ -16,6 +16,7 @@ import javafx.scene.image.Image;
 
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
@@ -61,6 +62,10 @@ public class Controller {
     @FXML
     private Slider heightResize;
 
+    final FileChooser fileChooser = new FileChooser();
+
+    private File file;
+
     @FXML
     void initialize()
     {
@@ -78,11 +83,10 @@ public class Controller {
 
     }
 
-    @FXML
     private void LoadImage()
     {
         try {
-            img = ImageIO.read(new File(path));
+            img = ImageIO.read(file);
             width = img.getWidth();
             height = img.getHeight();
             arr = new ColorRGB[width][height];
@@ -105,6 +109,12 @@ public class Controller {
 
         make3Graphs();
         printImg();
+    }
+
+    @FXML
+    private void Load() {
+        file = fileChooser.showOpenDialog(canvas.getScene().getWindow());
+        LoadImage();
     }
 
     @FXML
