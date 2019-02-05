@@ -109,12 +109,21 @@ public class Controller {
 
         make3Graphs();
         printImg();
+
+        canvas.getScene().getWindow().setWidth(width + 100);
+        canvas.getScene().getWindow().setHeight(height + 300);
     }
 
     @FXML
     private void Load() {
         file = fileChooser.showOpenDialog(canvas.getScene().getWindow());
         LoadImage();
+    }
+
+    @FXML
+    private void Exit() {
+        Stage stage = (Stage) canvas.getScene().getWindow();
+        stage.close();
     }
 
     @FXML
